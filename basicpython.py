@@ -1,3 +1,10 @@
+# Developed by Scott Shawcroft (@tannewt) https://github.com/tannewt/basicpython
+#
+# This is an experiment to edit Python code like BASIC was edited.
+# The idea is imagining this as the default mode on a Raspberry Pi 400
+#
+import os
+
 print("# Basic Python v0")
 
 program = []
@@ -19,6 +26,7 @@ while True:
             pass
     else:
         command = line
+        remainder = ""
     no_ready = False
     if lineno is not None:
         if lineno < 1:
@@ -28,6 +36,30 @@ while True:
                 program.extend([""] * (lineno - len(program)))
             program[lineno - 1] = remainder
             no_ready = True
+    elif command.lower() == 'dir':
+        wideCount = 0
+        for dir in os.listdir():
+            if os.stat(dir)[0] & (2**15) == 0:
+                wideCount += 1
+                if (wideCount % 4) == 0:
+                    print()
+                print(("<"+dir+">"+" "*(13-len(dir)))+" ",end="")
+
+        for dir in os.listdir():
+            if os.stat(dir)[0] & (2**15) != 0:
+                wideCount += 1
+                if (wideCount % 4) == 0:
+                    print()
+                print((dir+" "*(15-len(dir)))+" ",end="")
+        print()
+    elif command.lower() == "del":
+        if remainder.strip(" \"") != "":
+            if remainder.strip(" \"") in os.listdir():
+                os.remove(remainder.strip(" \""))
+            else:
+                print("Unable to delete: "+remainder.strip(" \"")+". File not found.")
+        else:
+            print("No file specified!")
     elif command.lower() == "list":
         for i, line in enumerate(program):
             if line:
@@ -47,9 +79,10 @@ while True:
         with open(filename, "r") as f:
             program = f.readlines()
             program = [line.strip("\r\n") for line in program]
+    elif command.lower() in ["exit","quit","dos"]:
+        break
     else:
         try:
             exec(line, top, top)
         except Exception as e:
             print(e)
-
