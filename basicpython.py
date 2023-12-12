@@ -4,6 +4,7 @@ print("# Basic Python v1")
 # Added "new" command to erase current python program in memory
 # Added "ls" or "dir" command to list current directory file list
 # Added "rm" or "erase" or "del" or "delete" command to erase a file in the directory
+# Added "format" to completely reformat the filesystem: it will erase this file too!
 # TODO: Add optional argument to "run" that will load and execute a file
 # TODO: Start in a new subdirectory that is created if it does not exist
 # TODO: Add change directory, create directory, delete directory (os.rmdir('directory'))
@@ -102,6 +103,16 @@ while True:
                 os.remove(remainder)
         else:
             print("File \"" + remainder + "\" does not exist")
+    elif command.lower() == "format":
+        import storage
+        
+        decision = input("\nAre you sure you want to format the filesystem (y/n)? ")
+        if decision.lower() == "y":
+            isolated = {}
+            try:
+                exec("storage.erase_filesystem()", isolated, isolated)
+            except Exception as e:
+                print("\nReformat failed: ERROR " + e)
     else:
         try:
             exec(line, top, top)
