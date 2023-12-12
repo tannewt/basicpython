@@ -1,11 +1,7 @@
 print("# Basic Python v1")
-# added "new" command
-# auto renumbers to count line numbers by 10 so there is room to insert a line
-# example: line 11 will insert between 10 and 20
-# issue: when typing in consecutive lines, the numbers get changed after every line,
-#        so entering in lines 1 then 2 then 11 will insert the third line between 1 and 2
 
 program = []
+new_program = []
 top = {}
 no_ready = False
 
@@ -29,17 +25,24 @@ while True:
         if lineno < 1:
             print("Line must be 1+")
         else:
-            lineno = int(lineno / 10)
             if lineno >= len(program):
-                lineno = len(program)
-            program.insert(lineno, remainder)
+                program.extend([""] * (lineno - len(program)))
+            program[lineno - 1] = remainder
             no_ready = True
+    elif command.lower() == "renum":
+        # move program lines into every 10 position in the array to allow for code insert
+        new_program.extend([""] * 10 * (1 + len(program)))
+        i = 1
+        for j, line in enumerate(program):
+            if line:
+                new_program[i*10 - 1] = line
+                i += 1
+        if len(new_program) > 0:
+            program = new_program
     elif command.lower() == "list":
         for i, line in enumerate(program):
             if line:
-                print((i+1)*10, line)
-    elif command.lower() == "new":
-        program = []
+                print(i+1, line)
     elif command.lower() == "run":
         isolated = {}
         try:
